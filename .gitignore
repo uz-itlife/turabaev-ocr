@@ -1,0 +1,18 @@
+# Source scans & split parts — NOT in git (too large, GitHub 100MB/file limit)
+*.pdf
+turabaev_parts/
+# OCR working/output artifacts
+out/
+*.png
+page_*.txt
+batch_p*.json
+turabaev_merged.json
+# language models (download separately, see README)
+tessdata/
+*.traineddata
+# python
+__pycache__/
+*.pyc
+.venv/
+venv/
+.DS_Store
