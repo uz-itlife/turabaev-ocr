@@ -2,11 +2,18 @@
 *.pdf
 turabaev_parts/
 # OCR working/output artifacts
-out/
+out/*
+!out/turabaev_merged_clean.json
 *.png
 page_*.txt
 batch_p*.json
 turabaev_merged.json
+# run logs
+run_all.log
+run_all.err.log
+run_all.pid
+*.log
+*.pid
 # language models (download separately, see README)
 tessdata/
 *.traineddata

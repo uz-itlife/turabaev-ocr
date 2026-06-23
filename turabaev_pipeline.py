@@ -112,6 +112,8 @@ def main():
     ap.add_argument("--batch", type=int, default=50)
     ap.add_argument("--first", type=int, default=1)
     ap.add_argument("--last", type=int, default=0, help="0 = last page of PDF")
+    ap.add_argument("--page-offset", type=int, default=0,
+                     help="add to each local page number when recording 'page' (for pre-split part PDFs)")
     ap.add_argument("--lang", default="rus+kaz+uzb_cyrl")
     ap.add_argument("--tessdata", default=os.environ.get("TESSDATA_PREFIX", ""))
     ap.add_argument("--keep-text", action="store_true", help="also save raw OCR .txt per page")
@@ -126,15 +128,16 @@ def main():
 
     try:
         for page in range(args.first, last + 1):
+            book_page = page + args.page_offset
             raw = ocr_page(args.pdf, page, args.dpi, args.lang, args.tessdata, workdir)
             if args.keep_text:
-                open(os.path.join(args.out, f"page_{page:03d}.txt"), "w",
+                open(os.path.join(args.out, f"page_{book_page:03d}.txt"), "w",
                      encoding="utf-8").write(raw)
-            ents = parse_text(dehyphenate(clean_lines(raw)), page)
+            ents = parse_text(dehyphenate(clean_lines(raw)), book_page)
             all_entries.extend(ents); batch_buf.extend(ents)
-            print(f"page {page}/{last}: {len(ents)} entries", file=sys.stderr)
+            print(f"page {page}/{last} (book p.{book_page}): {len(ents)} entries", file=sys.stderr)
             if (page - batch_start + 1) >= args.batch or page == last:
-                bf = os.path.join(args.out, f"batch_p{batch_start:03d}-{page:03d}.json")
+                bf = os.path.join(args.out, f"batch_p{batch_start + args.page_offset:03d}-{book_page:03d}.json")
                 json.dump(batch_buf, open(bf, "w", encoding="utf-8"),
                           ensure_ascii=False, indent=2)
                 batch_buf, batch_start = [], page + 1
